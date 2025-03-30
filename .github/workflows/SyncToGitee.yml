@@ -1,0 +1,30 @@
+name: 仓库同步
+description: 同步仓库到码云
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/SyncToGitee.yml'
+  schedule:
+    - cron: '0 18 * * *'  # 每天 2 点运行 18 + 8 - 24
+
+
+jobs:
+  repo-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror the Github organization repos to Gitee.
+        uses: Yikun/hub-mirror-action@master
+        with:
+          src: 'github/Byte-tea'
+          dst: 'gitee/byte-tea'
+          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+          dst_token:  ${{ secrets.GITEE_TOKEN }}
+          force_update: true
+          timeout: '2h'
+          account_type: org
+          debug: true
+          mappings: 'Byte-tea.github.io=>byte-tea.gitee.io'
